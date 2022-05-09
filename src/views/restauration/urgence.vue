@@ -10,9 +10,20 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="qr pt-10">
-                                <qrcode-stream @decode="onDecode"></qrcode-stream>
-                            </div> 
+                            <form @submit.prevent="onDecode" data-toggle="validator">
+                                <div class="row">
+                                     
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Code *</label>
+                                            <input v-model="payload.code" id="code" type="text" class="form-control"  required>
+                                            <div class="help-block with-errors"></div>
+                                        </div>
+                                    </div>                                 
+                                </div>                            
+                                <!-- <button type="submit" class="btn btn-primary mr-2">Save</button>
+                                <button type="reset" class="btn btn-danger">reinitialiser</button> -->
+                            </form>
                         </div>
                     </div>
                     
@@ -38,17 +49,20 @@ export default {
         }
     },
     methods: {
-  onDecode (decodedString) {
-    this.payload.code = decodedString
+  onDecode () {
     console.log('code', this.payload.code);
     axios.post(URL_API+'urgency-ticket', this.payload)
     .then(function (reponse){
         console.log('reponse', reponse);
         if (reponse.data.status == true) {
             Swal.fire('Réussi', reponse.data.message, 'success')
+            this.product.code = ''
+            document.getElementById("code").focus();
         }
         else{
             Swal.fire('Echec', reponse.data.message, 'error')
+            this.product.code = ''
+            document.getElementById("code").focus();
         }
     })
     .catch(function (error){
